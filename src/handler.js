@@ -78,4 +78,24 @@ const getAllBooks = (req, h) => {
   return response;
 };
 
-module.exports = { addBooks, getAllBooks };
+const getBookById = (req, h) => {
+  const id = req.params.bookId;
+
+  const bookById = books.findIndex((n) => n.id === id);
+  if (bookById !== -1) {
+    const response = h.response({
+      status: "success",
+      data: books[bookById],
+    });
+    response.code(200);
+    return response;
+  }
+  const response = h.response({
+    status: "fail",
+    message: "Buku tidak ditemukan",
+  });
+  response.code(404);
+  return response;
+};
+
+module.exports = { addBooks, getAllBooks, getBookById };
