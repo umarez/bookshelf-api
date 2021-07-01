@@ -1,4 +1,4 @@
-const books = require("./books");
+let books = require("./books");
 const { nanoid } = require("nanoid");
 
 const addBooks = (req, h) => {
@@ -98,4 +98,26 @@ const getBookById = (req, h) => {
   return response;
 };
 
-module.exports = { addBooks, getAllBooks, getBookById };
+const deleteBook = (req, h) => {
+  const id = req.params.bookId;
+
+  const filterBook = books.filter((n) => n.id == id).length;
+  if (filterBook > 0) {
+    books = books.filter((n) => n.id !== id);
+
+    const response = h.response({
+      status: "success",
+      message: "Buku berhasil dihapus",
+    });
+    response.code(200);
+    return response;
+  }
+  const response = h.response({
+    status: "fail",
+    message: "Buku gagal dihapus. Id tidak ditemukan",
+  });
+  response.code(404);
+  return response;
+};
+
+module.exports = { addBooks, getAllBooks, getBookById, deleteBook };
