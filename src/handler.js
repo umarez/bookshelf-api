@@ -2,11 +2,10 @@ const books = require("./books");
 const { nanoid } = require("nanoid");
 
 const addBooks = (req, h) => {
-  const bookData = [];
-
   const id = nanoid();
 
   const data = req.payload;
+
   const {
     name,
     year,
@@ -19,21 +18,64 @@ const addBooks = (req, h) => {
     reading,
   } = data;
 
-  const pushData = {
-    id,
-    ...data,
-  };
+  const validateReadPage = !(data.readPage > data.pageCount);
+  const validateName = data.name !== undefined;
+  const finished = data.pageCount === data.readPage;
 
-  bookData.push(pushData);
+  if (validateName && validateReadPage) {
+    const insertedAt = new Date().toISOString();
+    const updatedAt = insertedAt;
 
+    const pushData = {
+      id,
+      ...data,
+      finished,
+      insertedAt,
+      updatedAt,
+    };
+
+    books.push(pushData);
+
+    const response = h.response({
+      status: "success",
+      message: "Buku berhasil ditambahkan!",
+    });
+
+    response.code(201);
+    return response;
+  } else if (!validateName) {
+    const response = h.response({
+      status: "fail",
+      message: "Gagal menambahkan buku. Mohon isi nama buku",
+    });
+    response.code(400);
+    return response;
+  } else if (!validateReadPage) {
+    const response = h.response({
+      status: "fail",
+      message:
+        "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
+    });
+    response.code(400);
+    return response;
+  } else {
+    const response = h.response({
+      status: "error",
+      message: "Buku gagal ditambahkan",
+    });
+    response.code(500);
+    return response;
+  }
+};
+
+const getAllBooks = (req, h) => {
   const response = h.response({
     status: "success",
-    message: "Buku berhasil ditambahkan!",
+    data: { books },
   });
 
-  console.log(bookData);
-  response.code(201);
+  response.code(200);
   return response;
 };
 
-module.exports = { addBooks };
+module.exports = { addBooks, getAllBooks };
