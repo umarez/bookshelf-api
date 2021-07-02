@@ -9,7 +9,6 @@ const addBooks = (req, h) => {
   const {
     name,
     year,
-    string,
     author,
     summary,
     publisher,
@@ -98,6 +97,54 @@ const getBookById = (req, h) => {
   return response;
 };
 
+const updateBook = (req, h) => {
+  const id = req.params.bookId;
+
+  const data = req.payload;
+
+  const {
+    name,
+    year,
+    author,
+    summary,
+    publisher,
+    pageCount,
+    readPage,
+    reading,
+  } = data;
+
+  const bookExist = books.findIndex((n) => n.id === id);
+
+  if (bookExist) {
+    if (name !== undefined && readPage < pageCount) {
+      books[bookExist] = {
+        ...data,
+      };
+    } else if (name === undefined) {
+      const response = h.response({
+        status: "fail",
+        message: "Gagal memperbarui buku. Mohon isi nama buku",
+      });
+      response.code(400);
+      return response;
+    } else {
+      const response = h.response({
+        status: "fail",
+        message:
+          "Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount",
+      });
+      response.code(400);
+      return response;
+    }
+  }
+  const response = h.response({
+    status: "fail",
+    message: "Gagal memperbarui buku. Id tidak ditemukan",
+  });
+  response.code(404);
+  return response;
+};
+
 const deleteBook = (req, h) => {
   const id = req.params.bookId;
 
@@ -120,4 +167,4 @@ const deleteBook = (req, h) => {
   return response;
 };
 
-module.exports = { addBooks, getAllBooks, getBookById, deleteBook };
+module.exports = { addBooks, getAllBooks, getBookById, deleteBook, updateBook };
