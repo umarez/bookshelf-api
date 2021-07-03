@@ -1,5 +1,11 @@
-let books = require("./books");
-const { nanoid } = require("nanoid");
+/* eslint linebreak-style: ["error", "windows"] */
+/* eslint no-else-return: 0 */
+/* eslint no-unused-vars: 0 */
+/* eslint import/order: 0 */
+/* eslint object-shorthand: 0 */
+
+let books = require('./books');
+const { nanoid } = require('nanoid');
 
 const failedRes = (h, status, message, code) => {
   const response = h.response({
@@ -45,8 +51,8 @@ const addBooks = (req, h) => {
     books.push(pushData);
 
     const response = h.response({
-      status: "success",
-      message: "Buku berhasil ditambahkan",
+      status: 'success',
+      message: 'Buku berhasil ditambahkan',
       data: { bookId: id },
     });
 
@@ -55,19 +61,19 @@ const addBooks = (req, h) => {
   } else if (!validateName) {
     return failedRes(
       h,
-      "fail",
-      "Gagal menambahkan buku. Mohon isi nama buku",
-      400
+      'fail',
+      'Gagal menambahkan buku. Mohon isi nama buku',
+      400,
     );
   } else if (!validateReadPage) {
     return failedRes(
       h,
-      "fail",
-      "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
-      400
+      'fail',
+      'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+      400,
     );
   } else {
-    return failedRes(h, "error", "Buku gagal ditambahkan", 500);
+    return failedRes(h, 'error', 'Buku gagal ditambahkan', 500);
   }
 };
 
@@ -81,9 +87,7 @@ const getBooks = (req, h) => {
     if (queryName) {
       const name = req.query.name.toLowerCase();
       if (books.length !== 0) {
-        const dataNameBased = books.filter((n) =>
-          n.name.toLowerCase().includes(name)
-        );
+        const dataNameBased = books.filter((n) => n.name.toLowerCase().includes(name));
         dataNameBased.forEach((n) => {
           data.push({ id: n.id, name: n.name, publisher: n.publisher });
         });
@@ -103,8 +107,8 @@ const getBooks = (req, h) => {
     }
     if (queryFinished) {
       let dataFinished = [];
-      const finished = req.query.finished;
-      if (parseInt(finished) !== 0) {
+      const { finished } = req.query;
+      if (parseInt(finished, 10) !== 0) {
         dataFinished = books.filter((n) => n.finished === true);
       } else {
         dataFinished = books.filter((n) => n.finished === false);
@@ -120,7 +124,7 @@ const getBooks = (req, h) => {
   }
 
   const response = h.response({
-    status: "success",
+    status: 'success',
     data: { books: data },
   });
 
@@ -135,7 +139,7 @@ const getBookById = (req, h) => {
 
   if (bookById !== -1) {
     const response = h.response({
-      status: "success",
+      status: 'success',
       data: { book: books[bookById] },
     });
 
@@ -143,7 +147,7 @@ const getBookById = (req, h) => {
     return response;
   }
 
-  return failedRes(h, "fail", "Buku tidak ditemukan", 404);
+  return failedRes(h, 'fail', 'Buku tidak ditemukan', 404);
 };
 
 const updateBook = (req, h) => {
@@ -167,7 +171,7 @@ const updateBook = (req, h) => {
   data.finished = data.pageCount === data.readPage;
 
   if (bookExist !== -1) {
-    const insertedAt = books[bookExist].insertedAt;
+    const { insertedAt } = books[bookExist];
     if (name !== undefined && readPage < pageCount) {
       const updatedAt = new Date().toISOString();
       books[bookExist] = {
@@ -178,8 +182,8 @@ const updateBook = (req, h) => {
       };
 
       const response = h.response({
-        status: "success",
-        message: "Buku berhasil diperbarui",
+        status: 'success',
+        message: 'Buku berhasil diperbarui',
       });
 
       response.code(200);
@@ -187,38 +191,40 @@ const updateBook = (req, h) => {
     } else if (name === undefined) {
       return failedRes(
         h,
-        "fail",
-        "Gagal memperbarui buku. Mohon isi nama buku",
-        400
+        'fail',
+        'Gagal memperbarui buku. Mohon isi nama buku',
+        400,
       );
     } else {
       return failedRes(
         h,
-        "fail",
-        "Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount",
-        400
+        'fail',
+        'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
+        400,
       );
     }
   }
   return failedRes(
     h,
-    "fail",
-    "Gagal memperbarui buku. Id tidak ditemukan",
-    404
+    'fail',
+    'Gagal memperbarui buku. Id tidak ditemukan',
+    404,
   );
 };
 
 const deleteBook = (req, h) => {
   const id = req.params.bookId;
 
-  const filterBook = books.filter((n) => n.id == id).length;
+  const filterBook = books.filter((n) => n.id === id).length;
 
   if (filterBook > 0) {
     books = books.filter((n) => n.id !== id);
 
-    return failedRes(h, "success", "Buku berhasil dihapus", 200);
+    return failedRes(h, 'success', 'Buku berhasil dihapus', 200);
   }
-  return failedRes(h, "fail", "Buku gagal dihapus. Id tidak ditemukan", 404);
+  return failedRes(h, 'fail', 'Buku gagal dihapus. Id tidak ditemukan', 404);
 };
 
-module.exports = { addBooks, getBooks, getBookById, deleteBook, updateBook };
+module.exports = {
+  addBooks, getBooks, getBookById, deleteBook, updateBook,
+};

@@ -1,39 +1,38 @@
+/* eslint linebreak-style: ["error", "windows"] */
 const {
   addBooks,
-  getAllBooks,
   getBookById,
   deleteBook,
   updateBook,
   getBooks,
-} = require("./handler");
+} = require('./handler');
 
-routes = [
+const routes = [
   {
-    method: "POST",
-    path: "/books",
+    method: 'POST',
+    path: '/books',
     handler: addBooks,
   },
   {
-    method: "GET",
-    path: "/books",
+    method: 'GET',
+    path: '/books',
     handler: getBooks,
   },
   {
-    method: "GET",
-    path: "/books/{bookId}",
+    method: 'GET',
+    path: '/books/{bookId}',
     handler: getBookById,
   },
   {
-    method: "PUT",
-    path: "/books/{bookId}",
+    method: 'PUT',
+    path: '/books/{bookId}',
     handler: updateBook,
   },
   {
-    method: "DELETE",
-    path: "/books/{bookId}",
+    method: 'DELETE',
+    path: '/books/{bookId}',
     handler: deleteBook,
   },
-  
 ];
 
 module.exports = { routes };
