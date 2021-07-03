@@ -71,11 +71,53 @@ const addBooks = (req, h) => {
   }
 };
 
-const getAllBooks = (req, h) => {
+const getBooks = (req, h) => {
   const data = [];
-  books.forEach((n) => {
-    data.push({ id: n.id, name: n.name, publisher: n.publisher });
-  });
+  const queryName = req.query.name !== undefined;
+  const queryReading = req.query.reading !== undefined;
+  const queryFinished = req.query.finished !== undefined;
+
+  if (queryName || queryReading || queryFinished) {
+    if (queryName) {
+      const name = req.query.name.toLowerCase();
+      if (books.length !== 0) {
+        const dataNameBased = books.filter((n) =>
+          n.name.toLowerCase().includes(name)
+        );
+        dataNameBased.forEach((n) => {
+          data.push({ id: n.id, name: n.name, publisher: n.publisher });
+        });
+      }
+    }
+    if (queryReading) {
+      let dataRed = [];
+      const read = req.query.reading;
+      if (read !== 0) {
+        dataRed = books.filter((n) => n.reading !== false);
+      } else {
+        dataRed = books.filter((n) => n.reading === false);
+      }
+      dataRed.forEach((n) => {
+        data.push({ id: n.id, name: n.name, publisher: n.publisher });
+      });
+    }
+    if (queryFinished) {
+      let dataFinished = [];
+      const finished = req.query.finished;
+      if (parseInt(finished) !== 0) {
+        dataFinished = books.filter((n) => n.finished === true);
+      } else {
+        dataFinished = books.filter((n) => n.finished === false);
+      }
+      dataFinished.forEach((n) => {
+        data.push({ id: n.id, name: n.name, publisher: n.publisher });
+      });
+    }
+  } else {
+    books.forEach((n) => {
+      data.push({ id: n.id, name: n.name, publisher: n.publisher });
+    });
+  }
 
   const response = h.response({
     status: "success",
@@ -123,6 +165,7 @@ const updateBook = (req, h) => {
 
   const bookExist = books.findIndex((n) => n.id === id);
   data.finished = data.pageCount === data.readPage;
+
   if (bookExist !== -1) {
     const insertedAt = books[bookExist].insertedAt;
     if (name !== undefined && readPage < pageCount) {
@@ -178,4 +221,4 @@ const deleteBook = (req, h) => {
   return failedRes(h, "fail", "Buku gagal dihapus. Id tidak ditemukan", 404);
 };
 
-module.exports = { addBooks, getAllBooks, getBookById, deleteBook, updateBook };
+module.exports = { addBooks, getBooks, getBookById, deleteBook, updateBook };
